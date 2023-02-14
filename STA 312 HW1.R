@@ -19,14 +19,21 @@ beta1<-allBeta[1]
 X_t<-t(X)
 X%*%X_t
 betas_calc<-solve(X_t%*%X)%*%X_t%*%y
+betas_calc
+summary(Q1full)
 
 ##c
 y_hat<-X%*%betas_calc
+y_hat
+fitted(Q1full)
 ep_hat<-y-y_hat
+ep_hat
+residuals(Q1full)
 
 ##d
 delta_beta<-t(y-y_hat)%*%(y-y_hat)
 deviance(Q1full)
+delta_beta
 
 ##e
 del<-c(0.01,-0.01,0.02)
@@ -38,7 +45,8 @@ delta_diff
 ##f
 variance<-delta_beta/(5-3)
 stdv<-sqrt(variance)
-
+stdv
+summary(Q1full)
 ##g
 cov_beta<-as.numeric(variance)*solve(X_t%*%X)
 
@@ -47,7 +55,10 @@ summary(Q1full)
 intercept_cov<-1.7335^2
 beta1_cov<-0.4066^2
 beta2_cov<-0.4066^2
-
+vcov(Q1full)
+intercept_cov
+beta1_cov
+beta2_cov
 ##h
 Q1small<-lm(y~x1,data = Q1data)
 
@@ -79,11 +90,16 @@ avgY<-mean(y)
 avg.Q1.Full<-mean(Q1full$fitted.values)
 avg.Q1small<-mean(Q1small$fitted.values)
 avg.Q1small0<-mean(Q1small0$fitted.values)
-
+avgY
+avg.Q1.Full
+avg.Q1small
+avg.Q1small0
 ##m
 q1.intercept<-lm(y~1,data = Q1data)
 R.sq.Full<-(deviance(q1.intercept)-deviance(Q1full))/(deviance(q1.intercept))
 R.sq.Small<-(deviance(q1.intercept)-deviance(Q1small))/(deviance(q1.intercept))
+R.sq.Full
+R.sq.Small
 summary(Q1full)
 summary(Q1small)
 
@@ -105,7 +121,7 @@ head(round(ans,3))
 
 
 ##c
-view(ans)
+View(ans)
 apply(ans, 2, mean)
 
 
@@ -131,16 +147,16 @@ head(teengamb)
 teengamblm<-lm(gamble~sex+status+income+verbal,data = teengamb)
 summary(teengamblm)
 ##b
+teengamblm$residuals
 max(teengamblm$residuals)## The observation with largetst positive residual is the 24th observation
 ##c
 round(sum(teengamblm$residuals),6)
 ##d
 teengamblm1<-lm(gamble~1,data = teengamb)
-
 SSE<-deviance(teengamblm)
 SSE1<-deviance(teengamblm1)
 R.sqQ9<-(SSE1-SSE)/SSE1
-
+R.sqQ9
 ##E
 teengamblme<-lm(residuals(teengamblm)~.-gamble,data=teengamb)
 
