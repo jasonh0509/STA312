@@ -105,7 +105,7 @@ head(round(ans,3))
 
 
 ##c
-view(ans)
+View(ans)
 apply(ans, 2, mean)
 
 
