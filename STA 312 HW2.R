@@ -246,3 +246,4 @@ round(permcol_table(X=prostate_sub,y=4),digits = 4)
 ####Proportion of smaller deviance and given p value are identical
 
 #Q12
+##a
