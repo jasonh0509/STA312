@@ -154,7 +154,7 @@ head(y_star)
 lm_ystar<-lm(y_star~M)
 summary(lm_ystar)
 
-###Discuss
+###The t-values ranges from xxx to xxx. The F-statistics is 1314. R_square is 0.93
 
 ##c
 set.seed(2644)
@@ -167,6 +167,8 @@ y_dag<-cbind(1,M)%*%beta+epsd
 ##e
 lm_ydag<-lm(y_dag~M)
 summary(lm_ydag)
+
+###The t value ranges from xxx to xxx. The F-statistics is 1280 and the R_squared is 0.9283. We can see that both F-statistics and R_squared decreased if we compare it with the metrics from model in part (b) 
 
 
 #Q10
