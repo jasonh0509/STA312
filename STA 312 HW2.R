@@ -247,3 +247,47 @@ round(permcol_table(X=prostate_sub,y=4),digits = 4)
 
 #Q12
 ##a
+data("teengamb")
+gamble_model<-lm(gamble~.,data = teengamb)
+summary(gamble_model)
+###The variable sex and income have associated t statistics larger than qt(0.975,442)
+
+##b
+permcol_table(X=teengamb,y=5)
+
+###Based on the output, it is reasonable to remove sex and income from the model
+
+##c
+income_only<-lm(gamble~income,data = teengamb)
+deviance(income_only)
+deviance(gamble_model)
+SSR2<-deviance(income_only)-deviance(gamble_model)
+F_sta2<-(SSR2/(income_only$df.residual-gamble_model$df.residual))/(deviance(gamble_model)/(gamble_model$df.residual))
+teengamb_reduce<-teengamb[,c(3,5)]
+permcol_table(X=teengamb_reduce,y=2)
+
+
+#Q13
+##a
+data(sat)
+head(sat)
+lm_sat<-lm(total~expend+ratio+salary,data = sat)
+summary(lm_sat)
+
+##b
+###The t statistics is -1.878
+
+sat2<-sat[,-c(4:6)]
+permcol_table(X=sat2,y=4,PermuteL = c(3))
+
+
+##c
+lm_sat_null<-lm(total~1,data = sat2)
+SSR_sat<-deviance(lm_sat_null)-deviance(lm_sat)
+
+
+summary(lm_sat)
+
+##d
+
+F_sta_Sat<-(SSR_sat/(lm_sat_null$df.residual-gamble_model$df.residual))/(deviance(gamble_model)/(gamble_model$df.residual))
