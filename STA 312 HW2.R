@@ -3,7 +3,56 @@ install.packages("faraway")
 library(faraway)
 library(ggplot2)
 ##Permcol
-
+permcol<-
+  function (X,y,Permute,n=1000,hist=TRUE,lm=FALSE)
+  {
+    X2<-X
+    if (is.null(colnames(X2))){cn<-1:ncol(X)} else {cn<-colnames(X2)}
+    cat("\n")
+    cat("===========\n")
+    cat(noquote(paste(c("Response (y): ",paste(cn[y],collapse=", "),"\n"),collapse="")))
+    cat(noquote(paste(c("All: ",paste(cn,collapse=", "),"\n"),collapse="")))
+    cat(noquote(paste(c("Keep (X2): ",paste(cn[-c(Permute,y)],collapse=", "),"\n"),collapse="")))
+    cat(noquote(paste(c("Permute: ",paste(cn[Permute],collapse=", "),"\n"),collapse="")))
+    X<-X2[,-c(Permute,y)];V<-X2[,Permute];y<-X2[,y]
+    cat("-----------\n")
+    if (is.null(X)) {X<-rep(1,length(y))}
+    V<-as.matrix(cbind(V)); X<-as.matrix(cbind(X));
+    if(dim(X)[2]==0) {X<-cbind(X,1)}
+    D<-NULL
+    for (i in 1:n)
+    {
+      v2<-(apply(V,2,sample)); ylm2<-lm(y~X+v2);
+      D<-c(D,deviance(ylm2))
+    }
+    ylm<-lm(y~X+V); Dr<-deviance(ylm)
+    D<-round(D,8);Dr<-round(Dr,8)
+    if(hist){
+      hist(D,main="Histogram of deviances")
+      if (min(D)<Dr) rug(Dr,col=4,lwd=4)}
+    cat(noquote(paste(c("Target Deviance: ",round(Dr,3),"\n"),collapse="")))
+    cat("-----------\n")
+    a<-length(D[D<Dr])+length(D[D==Dr])/2
+    if ((a/n)==0) {
+      cat(paste(c("Smaller deviances: ","None","\n"),collapse=""))
+      cat(noquote(paste(c("Best/smallest: ", head(round(min(D),3)),"\n"),
+                        collapse="")))
+    } else {
+      U1<-paste(round(head(sort(D[D<=Dr])),2),collapse=", ")
+      #U2<-paste(round(tail(sort(D[D<=Dr])),2),collapse=", ")
+      cat(paste(c("Smaller deviances: ",a,"\n"),collapse=""))
+      cat(noquote(paste(c(U1,"\n"),collapse="")))
+      cat("-----------\n")
+      cat(noquote(paste(c("Proportion: ",a/n,"\n"),collapse="")))
+    }
+    cat("-----------\n")
+    Keep<-X;Permute<-V
+    lm1<-lm(y~Keep)
+    ylm<-lm(y~Keep+Permute)
+    if(lm) {print(summary(ylm))}
+    print(anova(lm1,ylm))
+    cat("===========\n")
+  }
 
 ##Permcol table
 permcol_table<-function (X,y,PermuteL=(1:ncol(X))[-y],n=1000)
@@ -52,22 +101,16 @@ DataX<-data.frame(V1=c(1,1,1),V2=c(4,2,6))
 #Q3
 X<-cbind(DataX$V1,DataX$V2)
 X_t<-t(X)
-
 X_t%*%X
-
 H_mtx<-X%*%solve(X_t%*%X)%*%X_t
-
-round(H_mtx)
 sum(diag(H_mtx))
-
 h_eigen<-eigen(H_mtx)
 E<-h_eigen$values
 sum(h_eigen$values)
 sum(diag(H_mtx))
 h_eigen_vec<-h_eigen$vectors
-
+h_eigen_vec
 DIAG<-matrix(c(1,0,0,0,1,0,0,0,0),nrow = 3,ncol = 3)
-
 h_eigen_vec%*%DIAG%*%t(h_eigen_vec)
 
 
@@ -138,9 +181,13 @@ rho2
 u[u<rho1]
 u[u>rho2]
 num_less_rho1<-length(u[u<rho1])
+num_less_rho1
 num_more_rho2<-length(u[u>rho2])
+num_more_rho2
 prop_rho1<-num_less_rho1/100
+prop_rho1
 prop_rho2<-num_more_rho2/100
+prop_rho2
 
 
 #Q5
@@ -154,7 +201,7 @@ head(y_star)
 lm_ystar<-lm(y_star~M)
 summary(lm_ystar)
 
-###The t-values ranges from xxx to xxx. The F-statistics is 1314. R_square is 0.93
+###The t-values ranges from -1.903 to 76.28. The F-statistics is 1314. R_square is 0.93. The estimates of parameter from M1 to M10 ranges from -0.12331 to 4.91
 
 ##c
 set.seed(2644)
@@ -168,7 +215,7 @@ y_dag<-cbind(1,M)%*%beta+epsd
 lm_ydag<-lm(y_dag~M)
 summary(lm_ydag)
 
-###The t value ranges from xxx to xxx. The F-statistics is 1280 and the R_squared is 0.9283. We can see that both F-statistics and R_squared decreased if we compare it with the metrics from model in part (b) 
+###The t value ranges from -1.528 to 75.55. The F-statistics is 1280 and the R_squared is 0.9283. We can see that the change of these metrics between model from (b) and (d) are minimal. 
 
 
 #Q10
@@ -207,8 +254,9 @@ summary(gamble_model)
 
 ##b
 permcol_table(X=teengamb,y=5)
+summary(gamble_model)
 
-###Based on the output, the reasonableness of the p-value for testing variable status, income and verbal is verified.
+###Based on the output, the reasonableness of the p-value for testing variable status, income and verbal is verified.The proportion of the smaller deviance is almost identical to those from the model.
 
 ##c
 income_only<-lm(gamble~income,data = teengamb)
@@ -218,9 +266,9 @@ SSR2<-deviance(income_only)-deviance(gamble_model)
 F_sta2<-(SSR2/(income_only$df.residual-gamble_model$df.residual))/(deviance(gamble_model)/(gamble_model$df.residual))
 F_sta2
 teengamb_reduce<-teengamb[,c(3,5)]
-permcol_table(X=teengamb,y=5,PermuteL = c(1,2,4))#?
-
-##The p value associated with variable status and verbal are reasonable(?0.194 and 0.18)
+permcol(X=teengamb,y=5,Permute = c(1,2,3))
+summary(gamble_model)
+##Based on the p-values in the output, the reasonableness is verified.
 
 
 #Q13
@@ -235,22 +283,24 @@ summary(lm_sat)
 ###The t statistics is -1.878
 
 sat2<-sat[,-c(4:6)]
-permcol_table(X=sat2,y=4,PermuteL = c(3))
+permcol_table(X=sat2,y=4)
 
 ###Based on the output, the p-value associated with variable salary is reasonable.
 
 
 ##c
 lm_sat_null<-lm(total~1,data = sat2)
-SSR_sat<-deviance(lm_sat_null)-deviance(lm_sat)
-
-
+SSE<-deviance(lm_sat)
+SSE1<-deviance(lm_sat_null)
+R_sq<-(SSE1-SSE)/SSE1;R_sq
+Adj_rsq<-1-(((SSE)/(50-4))/(SSE1/(50-1)));Adj_rsq
 summary(lm_sat)
+##The values calculated are identical to the summary output.
+
 
 ##d
-
-F_sta_Sat<-(SSR_sat/(lm_sat_null$df.residual-lm_sat$df.residual))/(deviance(lm_sat)/(lm_sat$df.residual))
-permcol_table(X=sat2,y=4,PermuteL = c(1,2,3))
+F_sta_Sat<-(SSR_sat/(lm_sat_null$df.residual-lm_sat$df.residual))/(deviance(lm_sat)/(lm_sat$df.residual));F_sta_Sat
+permcol(X=sat,y=7,Permute = c(1,2,3))
 
 ###Based on the output, the p-values associated with variable expend, ratio and salary is reasonable
 
@@ -261,14 +311,14 @@ summary(lm_sat3)
 
 ##f
 ###The t statistics is -12.559
-permcol_table(X=sat3,y=5,PermuteL = c(4))
-## The reasonableness of the p-value associated with variable takers is verified(0=0)
+permcol_table(X=sat3,y=5)
+## The reasonableness of the p-value associated with variable takers is verified.
 
 ##g
 lm_takers_only<-lm(total~takers,data = sat3)
 SSR_taker_only<-deviance(lm_takers_only)-deviance(lm_sat3)
-F_sta_taker<-(SSR_taker_only/((lm_takers_only$df.residual-lm_sat3$df.residual)))/(deviance(lm_sat3)/lm_sat3$df.residual)
+F_sta_taker<-(SSR_taker_only/((lm_takers_only$df.residual-lm_sat3$df.residual)))/(deviance(lm_sat3)/lm_sat3$df.residual);F_sta_taker
 anova(lm_takers_only,lm_sat3)
-permcol_table(X=sat3,y=5,PermuteL = c(1,2,3))
+permcol(X=sat3,y=5,Permute = c(1,2,3))
 
-##Based on the output, the p-values associated with variable expend, ratio and salary are resonable.
+##Based on the output, the p-values associated with variable expend, ratio and salary are reasonable.Verified
