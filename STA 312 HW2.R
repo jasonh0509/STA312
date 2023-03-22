@@ -102,7 +102,8 @@ DataX<-data.frame(V1=c(1,1,1),V2=c(4,2,6))
 X<-cbind(DataX$V1,DataX$V2)
 X_t<-t(X)
 X_t%*%X
-H_mtx<-X%*%solve(X_t%*%X)%*%X_t
+solve(X_t%*%X)
+H_mtx<-X%*%solve(X_t%*%X)%*%X_t;H_mtx
 sum(diag(H_mtx))
 h_eigen<-eigen(H_mtx)
 E<-h_eigen$values
@@ -147,18 +148,18 @@ hist(c)
 ###Based on the histogram of c, the common distribution of any entry c_i in c is chi-square distribution
 
 ##d
-k1<-qchisq(0.025,df=10)
-k2<-qchisq(1-0.025,df=10)
+k1<-qchisq(0.025,df=10);k1
+k2<-qchisq(1-0.025,df=10);k2
 
 ###Thus, k1= 3.25, k2=20.48
 
 ##e
 c[c<k1]
 c[c>k2]
-num1<-length(c[c<k1])
-num2<-length(c[c>k2])
-proportion1<-num1/1000
-proportion2<-num2/1000
+num1<-length(c[c<k1]);num1
+num2<-length(c[c>k2]);num2
+proportion1<-(num1/1000)*1000;proportion1
+proportion2<-num2/1000;proportion2*1000
 
 ###The proportion of values in c that are less than k1 is 0.023. The proportion of values in c that are less than k2 is 0.026
 
@@ -171,23 +172,17 @@ hist(u)
 ### The common distribution of any entry in u is F distribution
 
 ##h
-rho1<-qf(0.1,df1=10,df2=10)
-rho1
-rho2<-qf(0.9,df1=10,df2 = 10)
-rho2
+rho1<-qf(0.1,df1=10,df2=10);rho1
+rho2<-qf(0.9,df1=10,df2 = 10);rho2
 ## Thus, rho1 = 0.431,rho2 = 2.323
 
 ##i
 u[u<rho1]
 u[u>rho2]
-num_less_rho1<-length(u[u<rho1])
-num_less_rho1
-num_more_rho2<-length(u[u>rho2])
-num_more_rho2
-prop_rho1<-num_less_rho1/100
-prop_rho1
-prop_rho2<-num_more_rho2/100
-prop_rho2
+num_less_rho1<-length(u[u<rho1]);num_less_rho1
+num_more_rho2<-length(u[u>rho2]);num_more_rho2
+prop_rho1<-num_less_rho1/100;prop_rho1
+prop_rho2<-num_more_rho2/100;prop_rho2
 
 
 #Q5
@@ -236,13 +231,9 @@ lm_no_above0.05<-lm(lpsa~lcavol+lweight+svi,data = prostate)
 summary(lpsa_model)
 summary(lm_no_above0.05)
 SSR<-deviance(lm_no_above0.05)-deviance(lpsa_model)
-F_sta<-(SSR/(lm_no_above0.05$df.residual-lpsa_model$df.residual))/(deviance(lpsa_model)/(lpsa_model$df.residual))
-
+F_sta<-(SSR/(lm_no_above0.05$df.residual-lpsa_model$df.residual))/(deviance(lpsa_model)/(lpsa_model$df.residual));F_sta
 anova(lm_no_above0.05,lpsa_model)
-SSR<-deviance(lm_no_above0.05)-deviance(lpsa_model)
-F_sta<-(SSR/(lm_no_above0.05$df.residual-lpsa_model$df.residual))/(deviance(lpsa_model)/(lpsa_model$df.residual))
-prostate_sub<-prostate[,c(1,2,5,9)]
-permcol_table(X=prostate_sub,y=4)
+permcol(X=prostate,y=9,Permute = c(3,4,6,7,8))
 ####Proportion of smaller deviance and given p value is identical for variable lcavol, but different from each other for variable lweight and svi.
 
 #Q12
@@ -253,6 +244,7 @@ summary(gamble_model)
 ###The variable sex and income have associated t statistics larger than qt(0.975,442)
 
 ##b
+set.seed(114514)
 permcol_table(X=teengamb,y=5)
 summary(gamble_model)
 
@@ -263,11 +255,9 @@ income_only<-lm(gamble~income,data = teengamb)
 deviance(income_only)
 deviance(gamble_model)
 SSR2<-deviance(income_only)-deviance(gamble_model)
-F_sta2<-(SSR2/(income_only$df.residual-gamble_model$df.residual))/(deviance(gamble_model)/(gamble_model$df.residual))
-F_sta2
+F_sta2<-(SSR2/(income_only$df.residual-gamble_model$df.residual))/(deviance(gamble_model)/(gamble_model$df.residual));F_sta2
 teengamb_reduce<-teengamb[,c(3,5)]
-permcol(X=teengamb,y=5,Permute = c(1,2,3))
-summary(gamble_model)
+permcol(X=teengamb,y=5,Permute = c(1,2,4))
 ##Based on the p-values in the output, the reasonableness is verified.
 
 
@@ -317,7 +307,8 @@ permcol_table(X=sat3,y=5)
 ##g
 lm_takers_only<-lm(total~takers,data = sat3)
 SSR_taker_only<-deviance(lm_takers_only)-deviance(lm_sat3)
-F_sta_taker<-(SSR_taker_only/((lm_takers_only$df.residual-lm_sat3$df.residual)))/(deviance(lm_sat3)/lm_sat3$df.residual);F_sta_taker
+F_sta_taker<-(SSR_taker_only/((lm_takers_only$df.residual-lm_sat3$df.residual)))/(deviance(lm_sat3)/lm_sat3$df.residual)
+F_sta_taker
 anova(lm_takers_only,lm_sat3)
 permcol(X=sat3,y=5,Permute = c(1,2,3))
 
