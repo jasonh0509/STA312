@@ -52,10 +52,12 @@ permcol<-
 
 
 
-
+#Q3
 ##a
 DataA<-data.frame(V1=c(1,1,0),V2=c(2,0,0),V3=c(3,1,1))
 A<-cbind(DataA$V1,DataA$V2,DataA$V3)
+t(A)
+t(A)%*%A
 
 
 ##b
@@ -70,18 +72,26 @@ V[1,1]
 Z[1,1]+2*Z[2,1]+3*Z[3,1]
 
 
+
 ##d
+
 cov(t(V))
 
 ##e
-V%*%(I)
+Iden<-diag(200)
+H1<-matrix(1,200,1)
+H_MTX1<-H1%*%solve(t(H1)%*%H1)%*%t(H1)#This is the actual h matrix
+(V%*%(Iden-H_MTX1)%*%t(V))/(200-1)
+
 
 
 
 
 ##Q4
-v<-c(-4,1,3,0,0,-1,1)
+###a
+v<-c(-4,1,3,0,0,-1,-1)
 
+###b
 set.seed(2466)
 X<-cbind(1,sample(v,50,replace = TRUE),
          sample(v,50,replace = TRUE),
@@ -94,15 +104,15 @@ head(X)
 
 ##c
 set.seed(2488);eps<-sample(c(-5,-4,-3,-2,-1,1,2,3,4,5),50,replace = TRUE)
-
 eps
 
-
+##d
+mean(eps)
+var(eps)
 ##e
 beta<-cbind(c(2,1,0,0,1,2))
 y<-X%*%beta+eps
 HW3data<-data.frame(X[,-1],y)
-
 
 
 ##f
@@ -138,27 +148,45 @@ abline(1,1)
 step(Hw3full,direction = "backward",
      scale = summary(Hw3full)$sigma^2,trace = TRUE)
 model.backward<-lm(y~X2+X5+X6,data = HW3data)
+summary(model.backward)
 step(Hw3null,scope=list(lower=Hw3null,upper=Hw3full),
      direction = "forward",scale = summary(Hw3full)$sigma^2,trace = TRUE)
 model.foward<-lm(y~X6+X5+X2,data = HW3data)
+summary(model.foward)
 step(Hw3full,scope = list(lower=Hw3null,upper=Hw3full),
      direction = "both",scale=summary(Hw3full)$sigma^2,trace = TRUE)
 model.both<-lm(y~X2+X5+X6,data = HW3data)
+summary(model.both)
+
 
 
 ##l
+F1<-lm(y~.,data = HW3data)
+XF1<-model.matrix(F1);p<-ncol(XF1);n<-nrow(XF1)
+F2<-lm(y~X2+X5+X6,data = HW3data)
+XF2<-model.matrix(F2);q<-ncol(XF2);n<-nrow(XF2)
+SSEp<-deviance(F1);SSEq<-deviance(F2)
+SSE1<-deviance(Hw3null)
+Cp<-SSEq/(SSEp/(n-p))-n+2*q;Cp
+R_sq<-(SSE1-SSEq)/SSE1;R_sq
+R_sq_adj<-(SSE1/(n-1)-SSEq/(n-q))/(SSE1/(n-1));R_sq_adj
 
 ##m
 round(cor(HW3data$y,fitted(Hw3full)),3)
 
-
+##n(?)
+beta_hat<-solve(t(X)%*%X)%*%t(X)%*%y
+L<-solve((t(X)%*%X))
+Sigma_beta_hat<-deviance(Hw3full)/(n-p)*solve(t(X)%*%X)
+sd<-sqrt(Sigma_beta_hat[2,2]);sd
+t<-as.vector(beta_hat)/sqrt(diag(Sigma_beta_hat));t
+summary(Hw3full)
 ##o
-
+round(qt(0.975,1:50),3)
+t_sta<-qt(.975,46)
+lower<-0.9894-t_sta*0.2777
+upper<-0.9894+t_sta*0.2777
+confint(F2)
 ##p
-###改full and reduce
-fullF<-lm(y~.,data = HW3data)
-reducedF<-lm(y~X2+X3+X6,data = HW3data)
-SSR<-deviance(reducedF)-deviance(fullF)
-F_sta4p<-(SSR/(reducedF$df.residual-fullF$df.residual))/(deviance(fullF)/(fullF$df.residual));F_sta4p
-
-permcol(X=HW3data,y=6,Permute = c(3,4))
+F_sta4p<-((SSEq-SSEp)/(p-q))/(SSEp/(n-p));F_sta4p
+permcol(X=HW3data,y=6,Permute = c(2,3))
