@@ -78,6 +78,7 @@ Z[1,1]+2*Z[2,1]+3*Z[3,1]
 cov(t(V))
 
 ##e
+cov(t(V))
 Iden<-diag(200)
 H1<-matrix(1,200,1)
 H_MTX1<-H1%*%solve(t(H1)%*%H1)%*%t(H1)#This is the actual h matrix
@@ -179,14 +180,16 @@ beta_hat<-solve(t(X)%*%X)%*%t(X)%*%y
 L<-solve((t(X)%*%X))
 Sigma_beta_hat<-deviance(Hw3full)/(n-p)*solve(t(X)%*%X)
 sd<-sqrt(Sigma_beta_hat[2,2]);sd
-t<-as.vector(beta_hat)/sqrt(diag(Sigma_beta_hat));t
+t<-as.vector(beta_hat)/sqrt(diag(Sigma_beta_hat))
+t
 summary(Hw3full)
+
 ##o
-round(qt(0.975,1:50),3)
-t_sta<-qt(.975,46)
-lower<-0.9894-t_sta*0.2777
-upper<-0.9894+t_sta*0.2777
-confint(F2)
+t_sta<-qt(.975,n-p)
+lower<-1.02-t_sta*0.2843;lower
+upper<-1.02+t_sta*0.2843;upper
+confint(F1)
+
 ##p
 F_sta4p<-((SSEq-SSEp)/(p-q))/(SSEp/(n-p));F_sta4p
 permcol(X=HW3data,y=6,Permute = c(2,3))
