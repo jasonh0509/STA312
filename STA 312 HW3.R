@@ -1,4 +1,5 @@
 library(leaps)
+library(faraway)
 permcol<-
   function (X,y,Permute,n=1000,hist=TRUE,lm=FALSE)
   {
@@ -193,3 +194,47 @@ confint(F1)
 ##p
 F_sta4p<-((SSEq-SSEp)/(p-q))/(SSEp/(n-p));F_sta4p
 permcol(X=HW3data,y=6,Permute = c(2,3))
+
+
+##Q8
+
+##Cp Function
+function (cp,...)
+{
+  p <- max(cp$size)
+  i <- (cp$Cp < (p + 1.5))
+  plot(cp$size[i], cp$Cp[i], xlab = "p", ylab = "Cp",
+       type = "n",...)
+  labels <- apply(cp$which, 1, function(x)
+    paste(as.character((1:(p - 1))[x]), collapse = ""))
+  text(cp$size[i], cp$Cp[i], labels[i],...)
+  abline(0, 1)
+}
+data(sat)
+
+###a
+head(sat)
+
+
+##b
+sat2<-sat[,c(1:4,7)]
+
+##c
+sat2full<-lm(total~.,data = sat2)
+summary(sat2full)
+sat2null<-lm(total~1,data = sat2)
+summary(sat2null)
+
+
+##d
+leaps(sat2[,c(1:4)],sat2[,5],nbest = 3,method = "Cp")
+
+##e
+leap.ajdr2<-leaps(sat2[,c(1:4)],sat2[,5],nbest = 3,method = "adjr2")
+maxadjr(leap.ajdr2,best=6)
+
+
+##f
+sat2Reg<-regsubsets(y~.,data = sat2)
+plot(sat2Reg,scale = "Cp")
+plot(sat2Reg,scale = "adjr2")
