@@ -242,6 +242,14 @@ plot(sat2Reg,scale = "adjr2")
 ##g
 subsets(satregs, statistic="cp",ylim=c(4,8),legend=FALSE)
 abline(1,1)
-subsets(satregs, statistic="adjr2",legend=FALSE,ylim=c(1,4))
-subsets(satregs, statistic="rsq",legend=FALSE)
-subsets(satregs, statistic="rss",legend=FALSE)
+subsets(satregs, statistic="adjr2",legend=FALSE,ylim=c(-2,10))
+
+subsets(satregs, statistic="rsq",legend=FALSE,ylim=c(0,0.05))
+subsets(satregs, statistic="rss",legend=FALSE,ylim=c(2600,2750))
+
+##h
+step(sat2full,direction = "backward",
+     scale=summary(ylm)$sigma^2,trace = TRUE)
+
+step(sat2null,scope=list(lower=sat2null,upper=sat2full),
+     direction = "forward",scale=summary(ylm)$sigma^2,trace = TRUE)
