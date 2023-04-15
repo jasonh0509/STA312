@@ -133,7 +133,7 @@ summary(Hw3null)
 Hw3regs<-regsubsets(y~.,nbest = 3,data = HW3data)
 plot(Hw3regs,scale = "Cp")
 plot(Hw3regs,scale = "adjr2")
-
+sort(summary(Hw3regs)$rss)
 
 ##i
 summary(Hw3regs)$outmat
@@ -235,21 +235,50 @@ maxadjr(leap.ajdr2,best=6)
 
 
 ##f
-satregs<-regsubsets(y~.,data = sat2)
-plot(sat2Reg,scale = "Cp")
-plot(sat2Reg,scale = "adjr2")
+satregs<-regsubsets(total~.,data = sat2,nbest = 3)
+plot(satregs,scale = "Cp")
+plot(satregs,scale = "adjr2")
+plot(satregs,scale = "r2")
+
 
 ##g
-subsets(satregs, statistic="cp",ylim=c(4,8),legend=FALSE)
-abline(1,1)
-subsets(satregs, statistic="adjr2",legend=FALSE,ylim=c(-2,10))
-
-subsets(satregs, statistic="rsq",legend=FALSE,ylim=c(0,0.05))
-subsets(satregs, statistic="rss",legend=FALSE,ylim=c(2600,2750))
+subsets(satregs, statistic="cp",ylim=c(0,8),legend=FALSE)
+abline(1,1)#only for Cp
+subsets(satregs, statistic="adjr2",legend=FALSE,ylim=c(0.78,0.82))
+subsets(satregs, statistic="rsq",legend=FALSE,ylim=c(0.79,0.82))
+subsets(satregs, statistic="rss",legend=FALSE,ylim=c(48000,59000))
+###expected value of cp is p or q,abline tells us what expected cp would be if the model is correct
+###correct models should be near the line 
 
 ##h
 step(sat2full,direction = "backward",
-     scale=summary(ylm)$sigma^2,trace = TRUE)
+     scale=summary(sat2full)$sigma^2,trace = TRUE)
+model.sat2.back<-lm(total~ratio+salary+takers,data = sat2)
 
 step(sat2null,scope=list(lower=sat2null,upper=sat2full),
-     direction = "forward",scale=summary(ylm)$sigma^2,trace = TRUE)
+     direction = "forward",scale=summary(sat2full)$sigma^2,trace = TRUE)
+model.sat2.forward<-lm(total~takers+expend,data = sat2)
+
+step(sat2full,scope = list(lower=sat2null,upper=sat2full),
+     direction = "both",scale=summary(sat2full)$sigma^2,trace = TRUE)
+model.sat2.both
+
+#Q9
+data(prostate)
+
+##a
+head(prostate)
+##b
+prostaelm<-lm(lpsa~.,data = prostate)
+summary(prostaelm)
+
+##c
+X<-model.matrix(prostaelm)
+X<-X[,]
+
+
+##d
+confint(prostaelm)
+
+##e
+x0<-c(1, 1.44692, 3.62301, 65, .30010, 0, -0.79851, 7, 15)
