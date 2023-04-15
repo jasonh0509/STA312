@@ -235,6 +235,13 @@ maxadjr(leap.ajdr2,best=6)
 
 
 ##f
-sat2Reg<-regsubsets(y~.,data = sat2)
+satregs<-regsubsets(y~.,data = sat2)
 plot(sat2Reg,scale = "Cp")
 plot(sat2Reg,scale = "adjr2")
+
+##g
+subsets(satregs, statistic="cp",ylim=c(4,8),legend=FALSE)
+abline(1,1)
+subsets(satregs, statistic="adjr2",legend=FALSE,ylim=c(1,4))
+subsets(satregs, statistic="rsq",legend=FALSE)
+subsets(satregs, statistic="rss",legend=FALSE)
