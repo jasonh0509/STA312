@@ -265,7 +265,15 @@ step(sat2full,scope = list(lower=sat2null,upper=sat2full),
      direction = "both",scale=summary(sat2full)$sigma^2,trace = TRUE)
 model.sat2.both<-lm(total~ratio+salary+takers,data = sat2)
 summary(model.sat2.both)
+
 ##i
+XSAT2.full<-model.matrix(sat2full);p.sat<-ncol(XSAT2.full);n.sat<-nrow(XSAT2.full)
+XSAT2.reduce<-model.matrix(model.sat2.forward);q.sat<-ncol(XSAT2.reduce);n.sat<-nrow(XSAT2.reduce)
+SSEp.sat<-deviance(sat2full);SSEq.sat<-deviance(model.sat2.forward)
+SSE1.sat<-deviance(sat2null)
+Cp.sat<-SSEq.sat/(SSEp.sat/(n.sat-p.sat))-n.sat+2*q.sat;Cp.sat
+R_sq.sat<-(SSE1.sat-SSEq.sat)/SSE1.sat;R_sq.sat
+R_sq_adj.sat<-(SSE1.sat/(n.sat-1)-SSEq.sat/(n.sat-q.sat))/(SSE1.sat/(n.sat-1));R_sq_adj.sat
 
 
 #Q9
@@ -283,6 +291,7 @@ X<-X[,]
 
 
 ##d(need compute)
+
 
 confint(prostaelm)
 
