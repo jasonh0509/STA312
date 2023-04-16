@@ -274,7 +274,7 @@ SSE1.sat<-deviance(sat2null)
 Cp.sat<-SSEq.sat/(SSEp.sat/(n.sat-p.sat))-n.sat+2*q.sat;Cp.sat
 R_sq.sat<-(SSE1.sat-SSEq.sat)/SSE1.sat;R_sq.sat
 R_sq_adj.sat<-(SSE1.sat/(n.sat-1)-SSEq.sat/(n.sat-q.sat))/(SSE1.sat/(n.sat-1));R_sq_adj.sat
-
+summary(model.sat2.forward)
 
 #Q9
 data(prostate)
@@ -282,18 +282,23 @@ data(prostate)
 ##a
 head(prostate)
 ##b
-prostaelm<-lm(lpsa~.,data = prostate)
-summary(prostaelm)
+prostatefull<-lm(lpsa~.,data = prostate)
+summary(prostatefull)
 
 ##c
-X<-model.matrix(prostaelm)
+X<-model.matrix(prostatefull)
 X<-X[,]
 
 
 ##d(need compute)
+summary(prostatefull)
+X.prostate<-model.matrix(prostatefull)
+n.prost<-nrow(X.prostate);p.prost<-ncol(X.prostate)
+t_prostate<-qt(0.975,n.prost-p.prost)
+prost.lower<-(-0.02)-t_prostate*0.011173;prost.lower
+prost.upper<-(-0.02)+t_prostate*0.011173;prost.upper
 
-
-confint(prostaelm)
+confint(prostatefull,level = 0.95)#almost identical
 
 ##e
 x0<-c(1, 1.44692, 3.62301, 65, .30010, 0, -0.79851, 7, 15)
@@ -301,7 +306,24 @@ new<-data.frame(lcavol=1.44692,lweight=3.62301,
                 age=65,lbph=.30010, svi=0,lcp=-0.79851,gleason=7,
                 pgg45=15)
 
+EstX0<-t(x0)%*%coef(prostatefull)
+StdX0<-sqrt((deviance(prostatefull)/(n.prost-p.prost))*t(x0)%*%solve(t(X.prostate)%*%X.prostate)%*%x0)
+x0.lower<-EstX0-t_prostate*StdX0;x0.lower
+x0.upper<-EstX0+t_prostate*StdX0;x0.upper
+predict(prostatefull,newdata=new,level=.95,
+        interval="confidence")
 
+##f(missing)
+x.new<-c(1, 1.44692, 3.62301, 20, .30010, 0, -0.79851, 7, 15)
+new2<-data.frame(lcavol=1.44692,lweight=3.62301,
+                  age=20,lbph=.30010, svi=0,lcp=-0.79851,gleason=7,
+                  pgg45=15)
+EstX.new<-t(x.new)%*%coef(prostatefull)
+StdX.new<-sqrt((deviance(prostatefull)/(n.prost-p.prost))*t(x.new)%*%solve(t(X.prostate)%*%X.prostate)%*%x.new)
+EstX.new.lower<-EstX.new-t_prostate*StdX.new;EstX.new.lower
+EstX.new.upper<-EstX.new+t_prostate*StdX.new;EstX.new.upper
+predict(prostatefull,newdata=new2,level=.95,
+        interval="confidence")
 #Q10
 ##a
 data("teengamb")
