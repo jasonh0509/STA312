@@ -254,14 +254,19 @@ subsets(satregs, statistic="rss",legend=FALSE,ylim=c(48000,59000))
 step(sat2full,direction = "backward",
      scale=summary(sat2full)$sigma^2,trace = TRUE)
 model.sat2.back<-lm(total~ratio+salary+takers,data = sat2)
+summary(model.sat2.back)
 
 step(sat2null,scope=list(lower=sat2null,upper=sat2full),
      direction = "forward",scale=summary(sat2full)$sigma^2,trace = TRUE)
 model.sat2.forward<-lm(total~takers+expend,data = sat2)
+summary(model.sat2.forward)
 
 step(sat2full,scope = list(lower=sat2null,upper=sat2full),
      direction = "both",scale=summary(sat2full)$sigma^2,trace = TRUE)
-model.sat2.both
+model.sat2.both<-lm(total~ratio+salary+takers,data = sat2)
+summary(model.sat2.both)
+##i
+
 
 #Q9
 data(prostate)
@@ -277,8 +282,24 @@ X<-model.matrix(prostaelm)
 X<-X[,]
 
 
-##d
+##d(need compute)
+
 confint(prostaelm)
 
 ##e
 x0<-c(1, 1.44692, 3.62301, 65, .30010, 0, -0.79851, 7, 15)
+new<-data.frame(lcavol=1.44692,lweight=3.62301,
+                age=65,lbph=.30010, svi=0,lcp=-0.79851,gleason=7,
+                pgg45=15)
+
+
+#Q10
+##a
+data("teengamb")
+head(teengamb)
+
+##b
+gamble.full<-lm(gamble~.,data = teengamb)
+summary(gamble.full)
+gamble.null<-lm(gamble~1,data = teengamb)
+summary(gamble.null)
