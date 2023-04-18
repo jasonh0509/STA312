@@ -334,3 +334,16 @@ gamble.full<-lm(gamble~.,data = teengamb)
 summary(gamble.full)
 gamble.null<-lm(gamble~1,data = teengamb)
 summary(gamble.null)
+
+##c
+step(gamble.full,direction = "backward",
+     scale=summary(gamble.full)$sigma^2,trace = TRUE)
+
+step(gamble.null,scope=list(lower=gamble.null,upper=gamble.full),
+     direction = "forward",scale=summary(gamble.full)$sigma^2,trace = TRUE)
+
+step(gamble.full,scope = list(lower=gamble.null,upper=gamble.full),
+     direction = "both",scale=summary(gamble.full)$sigma^2,trace = TRUE)
+
+best.gamble.model<-lm(gamble~sex+income+verbal,data = teengamb)
+summary(best.gamble.model)
