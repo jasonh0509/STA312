@@ -336,6 +336,18 @@ gamble.null<-lm(gamble~1,data = teengamb)
 summary(gamble.null)
 
 ##c
+gambleregs<-regsubsets(gamble~.,data = teengamb,nbest = 3)
+plot(gambleregs,scale = "Cp")
+plot(gambleregs,scale = "adjr2")
+plot(gambleregs,scale = "r2")
+
+subsets(gambleregs, statistic="cp",ylim=c(0,13),legend=FALSE)
+abline(1,1)
+subsets(gambleregs, statistic="adjr2",legend=FALSE,ylim=c(0.35,0.5))
+subsets(gambleregs, statistic="rsq",legend=FALSE,ylim=c(0.36,0.55))
+subsets(gambleregs, statistic="rss",legend=FALSE,ylim=c(21500,45700))
+
+
 step(gamble.full,direction = "backward",
      scale=summary(gamble.full)$sigma^2,trace = TRUE)
 
@@ -347,3 +359,6 @@ step(gamble.full,scope = list(lower=gamble.null,upper=gamble.full),
 
 best.gamble.model<-lm(gamble~sex+income+verbal,data = teengamb)
 summary(best.gamble.model)
+
+
+
