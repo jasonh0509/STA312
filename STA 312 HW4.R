@@ -1,5 +1,17 @@
 library(faraway)
 library(car)
+
+##Q3
+###a
+XFrame<-data.frame(X1=c(rep(1,5)),X2=c(1,0,0,1,0))
+X<-as.matrix(XFrame)
+y<-as.matrix(c(2,0,3,0,3))
+solve(t(X)%*%X)
+X1<-X[2:5,]
+solve(t(X1)%*%X1)
+
+
+
 ##Q4
 v<-c(-4,1,3,0,0,-1,-1)
 set.seed(2466)
