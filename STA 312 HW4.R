@@ -9,6 +9,7 @@ y<-as.matrix(c(2,0,3,0,3))
 solve(t(X)%*%X)
 X1<-X[2:5,]
 solve(t(X1)%*%X1)
+t(X)%*%X
 
 
 
