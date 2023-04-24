@@ -9,9 +9,31 @@ y<-as.matrix(c(2,0,3,0,3))
 solve(t(X)%*%X)
 X1<-X[2:5,]
 solve(t(X1)%*%X1)
+
+###b
 t(X)%*%X
 
 
+###c
+beta_hat<-(solve(t(X)%*%X)%*%t(X))%*%y
+
+y_hat<-X%*%beta_hat
+epsilon_hat<-y-y_hat
+SSE<-t(epsilon_hat)%*%epsilon_hat
+
+###d
+H_mtx<-X%*%solve(t(X)%*%X)%*%t(X)
+sum(diag(H_mtx))
+
+
+###e
+beta_hat_1<-beta_hat-solve(t(X)%*%X)%*%X[1,]*(epsilon_hat[1]/(1-H_mtx[1,1]))
+
+###f
+combined.data1<-cbind(XFrame[-1,],y[-1,])
+colnames(combined.data1)[3]="y1"
+model.y1<-lm(y1~.,data = combined.data1)
+summary(model.y1)
 
 ##Q4
 v<-c(-4,1,3,0,0,-1,-1)
@@ -70,3 +92,7 @@ text(SSE.i,labels=1:50,cex=.7,col=4)
 
 ##f
 summary(influence.measures(Hw3lm2))
+
+
+
+##Q8
