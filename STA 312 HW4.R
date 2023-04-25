@@ -16,10 +16,9 @@ t(X)%*%X
 
 ###c
 beta_hat<-(solve(t(X)%*%X)%*%t(X))%*%y;beta_hat
-
 y_hat<-X%*%beta_hat;y_hat
 epsilon_hat<-y-y_hat;epsilon_hat
-SSE<-t(epsilon_hat)%*%epsilon_hat;SSE1
+SSE<-t(epsilon_hat)%*%epsilon_hat;SSE
 
 ###d
 H_mtx<-X%*%solve(t(X)%*%X)%*%t(X)
@@ -32,6 +31,7 @@ beta_hat_1<-beta_hat-solve(t(X)%*%X)%*%X[1,]*(epsilon_hat[1]/(1-H_mtx[1,1]))
 SSE1<-SSE-(epsilon_hat[1]/(1-H_mtx[1,1]))
 
 ###f
+y1<-y[-1,]
 beta_hat_1_f<-solve(t(X1)%*%X1)%*%t(X1)%*%y1;beta_hat_1_f
 y_hat_1_f<-X1%*%beta_hat_1_f;y_hat_1_f
 epsilon_hat_1_f<-y1-y_hat_1_f;epsilon_hat_1_f
@@ -71,22 +71,20 @@ SSE<-deviance(Hw3lm2)
 H<-X%*%solve(t(X)%*%X)%*%t(X)
 beta_hat<-coef(Hw3lm2)
 h<-diag(H)
-beta_hat.1<-beta_hat-solve(t(X)%*%X)%*%cbind(x1)*epsilon_hat[1]/(1-h[1])
-SSE.1<-SSE-(epsilon_hat[1]^2/(1-h[1]))
+beta_hat.1<-beta_hat-solve(t(X)%*%X)%*%cbind(x1)*epsilon_hat[1]/(1-h[1]);beta_hat.1
+SSE.1<-SSE-(epsilon_hat[1]^2/(1-h[1]));SSE.1
 
 ##c
 n<-nrow(X);p<-ncol(X)
-sigma_hat<-sqrt(SSE/(n-p))
+sigma_hat<-sqrt(SSE/(n-p));sigma_hat
 sigma_hat.1<-sqrt(SSE.1/(n-1-p));sigma_hat.1
 
 
 hatvalues(Hw3lm2)[1]
 rstandard(Hw3lm2)[1]
 rstudent(Hw3lm2)[1]
-cooks.distance(Hw3lm2)[1]hatvalues(Hw3lm2)[1]
-rstandard(Hw3lm2)[1]
-rstudent(Hw3lm2)[1]
 cooks.distance(Hw3lm2)[1]
+
 
 
 ##d
@@ -94,7 +92,7 @@ influencePlot(Hw3lm2)
 
 
 ##e
-SSE.i<-influence(Hw3lm2)$sigma^2*(n-1-p)
+SSE.i<-influence(Hw3lm2)$sigma^2*(n-1-p);SSE.i
 plot(SSE.i,type="n")
 text(SSE.i,labels=1:50,cex=.7,col=4)
 
