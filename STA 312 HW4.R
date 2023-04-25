@@ -15,25 +15,34 @@ t(X)%*%X
 
 
 ###c
-beta_hat<-(solve(t(X)%*%X)%*%t(X))%*%y
+beta_hat<-(solve(t(X)%*%X)%*%t(X))%*%y;beta_hat
 
-y_hat<-X%*%beta_hat
-epsilon_hat<-y-y_hat
-SSE<-t(epsilon_hat)%*%epsilon_hat
+y_hat<-X%*%beta_hat;y_hat
+epsilon_hat<-y-y_hat;epsilon_hat
+SSE<-t(epsilon_hat)%*%epsilon_hat;SSE1
 
 ###d
 H_mtx<-X%*%solve(t(X)%*%X)%*%t(X)
+H_mtx
 sum(diag(H_mtx))
 
 
 ###e
 beta_hat_1<-beta_hat-solve(t(X)%*%X)%*%X[1,]*(epsilon_hat[1]/(1-H_mtx[1,1]))
+SSE1<-SSE-(epsilon_hat[1]/(1-H_mtx[1,1]))
 
 ###f
-combined.data1<-cbind(XFrame[-1,],y[-1,])
-colnames(combined.data1)[3]="y1"
-model.y1<-lm(y1~.,data = combined.data1)
-summary(model.y1)
+beta_hat_1_f<-solve(t(X1)%*%X1)%*%t(X1)%*%y1;beta_hat_1_f
+y_hat_1_f<-X1%*%beta_hat_1_f;y_hat_1_f
+epsilon_hat_1_f<-y1-y_hat_1_f;epsilon_hat_1_f
+SSE1_f<-t(epsilon_hat_1_f)%*%epsilon_hat_1_f;SSE1_f
+
+###g
+sig_sq<-SSE/(nrow(X)-ncol(X));sig_sq
+sig_sq1<-SSE1/((nrow(X1))-ncol(X1));sig_sq1
+r1<-sqrt((1)/((sig_sq)*(1-0.5)));r1
+t<-1/(sqrt(sig_sq1)*sqrt(1-0.5));t
+D1<-r1^2*(H_mtx[1,1]/(1-H_mtx[1,1]))*(1/ncol(X));D1
 
 ##Q4
 v<-c(-4,1,3,0,0,-1,-1)
